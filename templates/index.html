@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Temperature Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Temperature Predictor</h1>
+        <form id="weatherForm">
+            <label for="app_temp">Apparent Temperature (C):</label>
+            <input type="number" id="app_temp" required>
+
+            <label for="humidity">Humidity (%):</label>
+            <input type="number" id="humidity" required>
+
+            <label for="visibility">Visibility (km):</label>
+            <input type="number" id="visibility" required>
+
+            <label for="wind_speed">Wind Speed (km/h):</label>
+            <input type="number" id="wind_speed" required>
+
+            <label for="pressure">Pressure (millibars):</label>
+            <input type="number" id="pressure" required>
+
+            <button type="button" onclick="predictTemperature()">Predict Temperature</button>
+        </form>
+        <p id="result"></p>
+
+
+    </div>
+
+    <script>
+        function predictTemperature() {
+            const app_temp = document.getElementById("app_temp").value;
+            const humidity = document.getElementById("humidity").value;
+            const visibility = document.getElementById("visibility").value;
+            const wind_speed = document.getElementById("wind_speed").value;
+            const pressure = document.getElementById("pressure").value;
+
+            fetch("http://127.0.0.1:5000/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ app_temp, humidity, visibility, wind_speed, pressure })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.predicted_temp) {
+                    document.getElementById("result").innerText = `Predicted Temperature: ${data.predicted_temp}°C`;
+                } else {
+                    document.getElementById("result").innerText = "Error: " + data.error;
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
